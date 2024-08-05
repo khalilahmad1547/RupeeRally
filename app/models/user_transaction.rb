@@ -11,5 +11,5 @@ class UserTransaction < ApplicationRecord
   belongs_to :user
   belongs_to :account
   belongs_to :category
-  belongs_to :transaction
+  belongs_to :parent_transaction, class_name: 'Transaction', foreign_key: 'transaction_id'
 end
