@@ -79,8 +79,10 @@ ActiveRecord::Schema[7.1].define(version: 20_240_805_185_853) do
     t.bigint 'account_id'
     t.bigint 'category_id'
     t.bigint 'transaction_id'
+    t.bigint 'paid_by_id'
     t.index ['account_id'], name: 'index_user_transactions_on_account_id', where: '(account_id IS NOT NULL)'
     t.index ['category_id'], name: 'index_user_transactions_on_category_id', where: '(category_id IS NOT NULL)'
+    t.index ['paid_by_id'], name: 'index_user_transactions_on_paid_by_id'
     t.index ['transaction_id'], name: 'index_user_transactions_on_transaction_id'
     t.index ['user_id'], name: 'index_user_transactions_on_user_id'
   end
@@ -110,4 +112,5 @@ ActiveRecord::Schema[7.1].define(version: 20_240_805_185_853) do
   add_foreign_key 'user_transactions', 'categories'
   add_foreign_key 'user_transactions', 'transactions'
   add_foreign_key 'user_transactions', 'users'
+  add_foreign_key 'user_transactions', 'users', column: 'paid_by_id'
 end

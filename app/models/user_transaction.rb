@@ -9,6 +9,7 @@ class UserTransaction < ApplicationRecord
   validates :amount_cents, presence: true
 
   belongs_to :user
+  belongs_to :paid_by, class_name: 'User'
   belongs_to :account, optional: true
   belongs_to :category, optional: true
   belongs_to :parent_transaction, class_name: 'Transaction', foreign_key: 'transaction_id'
