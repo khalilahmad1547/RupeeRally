@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 20_240_805_185_853) do
+ActiveRecord::Schema[7.1].define(version: 20_240_806_175_811) do
   # These are extensions that must be enabled in order to support this database
   enable_extension 'plpgsql'
 
@@ -47,6 +47,14 @@ ActiveRecord::Schema[7.1].define(version: 20_240_805_185_853) do
     t.index ['user_id'], name: 'index_categories_on_user_id'
   end
 
+  create_table 'groups', force: :cascade do |t|
+    t.string 'name', default: '', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.bigint 'created_by_id'
+    t.index %w[name created_by_id], name: 'index_groups_on_name_and_created_by_id', unique: true
+  end
+
   create_table 'refresh_tokens', force: :cascade do |t|
     t.string 'crypted_token'
     t.bigint 'user_id', null: false
@@ -65,6 +73,15 @@ ActiveRecord::Schema[7.1].define(version: 20_240_805_185_853) do
     t.datetime 'updated_at', null: false
     t.bigint 'user_id'
     t.index ['user_id'], name: 'index_transactions_on_user_id'
+  end
+
+  create_table 'user_groups', force: :cascade do |t|
+    t.bigint 'user_id', null: false
+    t.bigint 'group_id', null: false
+    t.datetime 'created_at', null: false
+    t.datetime 'updated_at', null: false
+    t.index ['group_id'], name: 'index_user_groups_on_group_id'
+    t.index ['user_id'], name: 'index_user_groups_on_user_id'
   end
 
   create_table 'user_transactions', force: :cascade do |t|
@@ -106,8 +123,11 @@ ActiveRecord::Schema[7.1].define(version: 20_240_805_185_853) do
   add_foreign_key 'accounts', 'users'
   add_foreign_key 'blacklisted_tokens', 'users'
   add_foreign_key 'categories', 'users'
+  add_foreign_key 'groups', 'users', column: 'created_by_id'
   add_foreign_key 'refresh_tokens', 'users'
   add_foreign_key 'transactions', 'users'
+  add_foreign_key 'user_groups', 'groups'
+  add_foreign_key 'user_groups', 'users'
   add_foreign_key 'user_transactions', 'accounts'
   add_foreign_key 'user_transactions', 'categories'
   add_foreign_key 'user_transactions', 'transactions'
