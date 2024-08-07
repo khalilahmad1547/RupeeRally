@@ -99,9 +99,6 @@ ActiveRecord::Schema[7.1].define(version: 20_240_806_175_811) do
     t.bigint 'paid_by_id'
     t.index ['account_id'], name: 'index_user_transactions_on_account_id', where: '(account_id IS NOT NULL)'
     t.index ['category_id'], name: 'index_user_transactions_on_category_id', where: '(category_id IS NOT NULL)'
-    t.index ['paid_by_id'], name: 'index_user_transactions_on_paid_by_id'
-    t.index ['transaction_id'], name: 'index_user_transactions_on_transaction_id'
-    t.index ['user_id'], name: 'index_user_transactions_on_user_id'
   end
 
   create_table 'users', force: :cascade do |t|
