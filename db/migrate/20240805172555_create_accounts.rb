@@ -8,5 +8,8 @@ class CreateAccounts < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+
+    add_reference :accounts, :user, foreign_key: true
+    add_index :accounts, %i[user_id name], unique: true
   end
 end

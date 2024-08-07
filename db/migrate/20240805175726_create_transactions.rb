@@ -7,5 +7,7 @@ class CreateTransactions < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+
+    add_reference :transactions, :user, foreign_key: true
   end
 end
