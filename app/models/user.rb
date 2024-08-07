@@ -12,6 +12,12 @@ class User < ApplicationRecord
 
   has_many :refresh_tokens, dependent: :delete_all
   has_many :blacklisted_tokens, dependent: :delete_all
+  has_many :accounts, dependent: :delete_all
+  has_many :categories, dependent: :delete_all
+  has_many :user_transactions, dependent: :delete_all
+  has_many :transactions, dependent: :delete_all
+  has_many :user_groups, dependent: :delete_all
+  has_many :groups, through: :user_groups
 
   def self.from_omniauth(auth)
     data = auth.info
