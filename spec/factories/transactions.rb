@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :transaction do
-    description { "MyText" }
-    amount_cents { 1 }
+    description { 'my expense' }
+    amount_cents { Faker::Number.number(digits: 5) }
     divided_by { 1 }
   end
 end
