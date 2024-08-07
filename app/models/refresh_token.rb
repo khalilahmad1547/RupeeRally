@@ -16,6 +16,6 @@ class RefreshToken < ApplicationRecord
   def set_crypted_token
     self.token = SecureRandom.hex
     self.crypted_token = Digest::SHA256.hexdigest(token)
-    self.exp = Time.now + Constants::REFRESH_TOKEN_LIFETIME
+    self.exp = Time.now.utc + Constants::REFRESH_TOKEN_LIFETIME
   end
 end

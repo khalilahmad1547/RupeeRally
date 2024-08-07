@@ -12,5 +12,5 @@ class UserTransaction < ApplicationRecord
   belongs_to :paid_by, class_name: 'User'
   belongs_to :account, optional: true
   belongs_to :category, optional: true
-  belongs_to :parent_transaction, class_name: 'Transaction', foreign_key: 'transaction_id'
+  belongs_to :parent_transaction, class_name: 'Transaction', foreign_key: 'transaction_id' # rubocop:disable Rails/InverseOf
 end
