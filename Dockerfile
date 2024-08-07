@@ -1,5 +1,6 @@
-ARG RUBY_VERSION=3.2.2
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
+ARG RUBY_VERSION=3.2.4
+
+FROM ruby:$RUBY_VERSION-slim AS base
 
 WORKDIR /rails
 
@@ -9,14 +10,27 @@ ENV PORT=3000 \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test" \
     RAILS_SERVE_STATIC_FILES="true" \
-    RAILS_MASTER_KEY="your_master_key" \
-    SECRET_KEY_BASE="your_secret_key_base_here"
+    RAILS_MASTER_KEY="6d7eb61bd8aab5749f56deea8bb4f64b" \
+    SECRET_KEY_BASE="6d7eb61bd8aab5749f56deea8bb4f64b" \
+    NODE_VERSION=18
 
 
-FROM base as build
+FROM base AS build
 
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config
+    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config curl
+
+ENV NVM_DIR=/usr/local/nvm
+RUN mkdir -p $NVM_DIR && \
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+
+RUN bash -c "source $NVM_DIR/nvm.sh && \
+    nvm install ${NODE_VERSION} && \
+    nvm use ${NODE_VERSION} && \
+    nvm alias default ${NODE_VERSION} && \
+    npm install -g yarn"
+
+ENV PATH=$NVM_DIR/versions/node/v${NODE_VERSION}/bin:$PATH
 
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
@@ -25,10 +39,9 @@ RUN bundle install && \
 
 COPY . .
 
-RUN bundle exec bootsnap precompile app/ lib/
+RUN bundle exec rails app:update:bin
 
-RUN ./bin/rails assets:precompile
-
+RUN bundle exec rails assets:precompile 2>&1 | tee /rails/assets_precompile.log
 
 FROM base
 
@@ -47,4 +60,4 @@ EXPOSE ${PORT}
 
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-CMD ./bin/rails server --port ${PORT}
+CMD ["./bin/rails", "server", "--port", "${PORT}"]
