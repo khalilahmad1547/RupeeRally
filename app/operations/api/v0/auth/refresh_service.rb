@@ -62,7 +62,7 @@ module Api::V0
       def json_serialize
         {
           access_token: new_access_token
-        }.to_json
+        }
       end
     end
   end
