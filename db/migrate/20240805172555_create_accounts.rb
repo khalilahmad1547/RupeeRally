@@ -5,6 +5,7 @@ class CreateAccounts < ActiveRecord::Migration[7.1]
       t.integer :balance_cents, null: false, default: 0
       t.integer :total_income_cents, null: false, default: 0
       t.integer :total_expense_cents, null: false, default: 0
+      t.integer :initial_balance_cents, null: false, default: 0
 
       t.timestamps
     end
