@@ -41,6 +41,8 @@ gem 'redis', '>= 4.0.1'
 
 gem 'rack-cors'
 
+gem 'pagy', '~> 9.0', '>= 9.0.5'
+
 gem 'devise', '~> 4.9'
 gem 'jwt', '~> 2.8', '>= 2.8.2'
 gem 'omniauth', '~> 2.1', '>= 2.1.2'
