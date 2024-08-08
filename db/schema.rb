@@ -70,6 +70,8 @@ ActiveRecord::Schema[7.1].define(version: 20_240_806_175_811) do
     t.text 'description', default: '', null: false
     t.integer 'amount_cents', default: 0, null: false
     t.integer 'divided_by', default: 0, null: false
+    t.string 'selected_date', default: '', null: false
+    t.string 'selected_time', default: '', null: false
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.bigint 'user_id'
