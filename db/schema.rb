@@ -17,8 +17,9 @@ ActiveRecord::Schema[7.1].define(version: 20_240_806_175_811) do
   create_table 'accounts', force: :cascade do |t|
     t.string 'name', default: '', null: false
     t.integer 'balance_cents', default: 0, null: false
-    t.integer 'total_income', default: 0, null: false
-    t.integer 'total_expense', default: 0, null: false
+    t.integer 'total_income_cents', default: 0, null: false
+    t.integer 'total_expense_cents', default: 0, null: false
+    t.integer 'initial_balance_cents', default: 0, null: false
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.bigint 'user_id'
