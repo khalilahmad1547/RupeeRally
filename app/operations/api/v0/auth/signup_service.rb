@@ -39,7 +39,7 @@ module Api::V0
       end
 
       def json_serialize
-        Api::V0::UserSerializer.render(user)
+        Api::V0::UserSerializer.render_as_hash(user)
       end
     end
   end
