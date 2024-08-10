@@ -21,7 +21,7 @@ module ErrorHandler
   private
 
   def success_response(data, status: :ok)
-    render json: { success: true, data: }, status:
+    render json: { success: true }.merge(data), status:
   end
 
   def process_standard_error(exception)
