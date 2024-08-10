@@ -11,7 +11,7 @@ module Api::V0
 
     def show
       Accounts::Show.call(params.to_unsafe_h, current_user: @current_user) do |result|
-        result.success { |data| success_response(data, status: :created) }
+        result.success { |data| success_response(data, status: :ok) }
         result.failure(:not_found) { not_found_response }
         result.failure { |errors| unprocessable_entity(errors) }
       end
