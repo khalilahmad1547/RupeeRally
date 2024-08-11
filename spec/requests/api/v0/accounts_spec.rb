@@ -32,7 +32,7 @@ RSpec.describe '/api/v0/accounts', type: :request do
         it 'should returns default number of accounts' do
           expect(response).to be_ok
           expect(response.parsed_body['data']['accounts'].count).to eq(Constants::DEFAULT_PER_PAGE)
-          expect(response).to match_json_schema('v0/account')
+          expect(response).to match_json_schema('v0/accounts/index')
         end
       end
 
@@ -42,7 +42,7 @@ RSpec.describe '/api/v0/accounts', type: :request do
         it 'should returns according to per_page value' do
           expect(response).to be_ok
           expect(response.parsed_body['data']['accounts'].count).to eq(per_page)
-          expect(response).to match_json_schema('v0/account')
+          expect(response).to match_json_schema('v0/accounts/index')
         end
       end
     end
