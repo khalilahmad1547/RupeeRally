@@ -52,6 +52,7 @@ RSpec.describe '/api/v0/accounts', type: :request do
       include_context 'unauthorized'
     end
   end
+
   describe 'GET#show' do
     let(:user) { create(:user) }
     let(:access_token) { valid_jwt(user) }
@@ -85,6 +86,77 @@ RSpec.describe '/api/v0/accounts', type: :request do
 
         it 'returns not_found' do
           expect(response).to be_not_found
+        end
+      end
+    end
+  end
+
+  describe 'POST#create' do
+    let(:user) { create(:user) }
+    let(:access_token) { valid_jwt(user) }
+    let(:headers) do
+      {
+        Authorization: access_token
+      }
+    end
+
+    let(:account_name) { 'test_account_no_01' }
+    let(:initial_balance_cents) { nil }
+    let(:params) do
+      {
+        name: account_name,
+        initial_balance_cents:
+      }
+    end
+
+    before { post '/api/v0/accounts', headers:, params: }
+
+    describe 'success' do
+      context 'with default params' do
+        it 'creates and return new account with initial balance 0' do
+          expect(response).to be_created
+          expect(response.parsed_body['data']['accounts'].count).to eq(1)
+          expect(response.parsed_body['data']['accounts'].first['balance_cents']).to eq(0)
+          expect(response.parsed_body['data']['accounts'].first['name']).to eq(account_name)
+          expect(response.parsed_body['data']['accounts'].first['total_expense_cents']).to eq(0)
+          expect(response.parsed_body['data']['accounts'].first['total_income_cents']).to eq(0)
+          expect(response.parsed_body['data']['accounts'].first['initial_balance_cents']).to eq(0)
+          expect(response).to match_json_schema('v0/accounts/create')
+        end
+      end
+
+      context 'when initial balance is given' do
+        let(:initial_balance_cents) { 1000 }
+
+        it 'creates and return new account with given initial balance' do
+          expect(response).to be_created
+          expect(response.parsed_body['data']['accounts'].count).to eq(1)
+          expect(response.parsed_body['data']['accounts'].first['balance_cents']).to eq(0)
+          expect(response.parsed_body['data']['accounts'].first['name']).to eq(account_name)
+          expect(response.parsed_body['data']['accounts'].first['total_expense_cents']).to eq(0)
+          expect(response.parsed_body['data']['accounts'].first['total_income_cents']).to eq(0)
+          expect(response.parsed_body['data']['accounts'].first['initial_balance_cents']).to eq(initial_balance_cents)
+          expect(response).to match_json_schema('v0/accounts/create')
+        end
+      end
+    end
+
+    describe 'failure' do
+      include_context 'forbidden'
+      include_context 'unauthorized'
+
+      context 'when account with name already exist' do
+        let(:account) { create(:account, user:) }
+        let(:params) do
+          {
+            name: account.name,
+            initial_balance_cents:
+          }
+        end
+
+        it 'returns not_found' do
+          expect(response).to be_unprocessable
+          expect(response.parsed_body['errors'][0][0]).to eq('Name has already been taken')
         end
       end
     end
