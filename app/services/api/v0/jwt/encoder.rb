@@ -4,14 +4,14 @@ module Api::V0::Jwt
   class Encoder
     attr_reader :user, :jti, :exp
 
-    def self.call(user)
-      new(user).call
+    def self.call(user, exp = nil)
+      new(user, exp).call
     end
 
-    def initialize(user)
+    def initialize(user, exp)
       @user = user
       @jti = SecureRandom.hex
-      @exp = token_expiry
+      @exp = exp || token_expiry
     end
 
     def call
