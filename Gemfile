@@ -61,6 +61,7 @@ group :development, :test do
   gem 'faker', '~> 3.4'
   gem 'json_matchers', '~> 0.11.1'
   gem 'rspec-rails', '~> 6.1'
+  gem 'simplecov', require: false
 end
 
 group :development do
