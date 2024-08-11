@@ -55,7 +55,7 @@ module ApplicationService
     def paginate(records, page, per_page)
       page_no = page || Constants::DEFAULT_PAGE
       per_page_no = per_page || Constants::DEFAULT_PER_PAGE
-      _, items = pagy(records, page: page_no, items: per_page_no)
+      _, items = pagy(records, page: page_no, limit: per_page_no)
       items
     end
   end
