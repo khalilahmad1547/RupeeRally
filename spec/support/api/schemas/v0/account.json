@@ -1,0 +1,66 @@
+{
+  "type": "object",
+  "required": [
+    "success",
+    "data"
+  ],
+  "properties": {
+    "success": {
+      "type": "boolean"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "accounts",
+        "meta"
+      ],
+      "properties": {
+        "accounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "balance_cents",
+              "initial_balance_cents",
+              "name",
+              "total_expense_cents",
+              "total_income_cents"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "balance_cents": {
+                "type": "integer"
+              },
+              "initial_balance_cents": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "total_expense_cents": {
+                "type": "integer"
+              },
+              "total_income_cents": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "meta": {
+          "type": "object",
+          "required": [
+            "total"
+          ],
+          "properties": {
+            "total": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  }
+}
