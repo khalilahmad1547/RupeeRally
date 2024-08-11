@@ -23,5 +23,13 @@ module Api::V0
         result.failure { |errors| unprocessable_entity(errors) }
       end
     end
+
+    def destroy
+      Accounts::Destroy.call(params.to_unsafe_h, current_user: @current_user) do |result|
+        result.success { success_response }
+        result.failure(:not_found) { not_found_response }
+        result.failure { |errors| unprocessable_entity(errors) }
+      end
+    end
   end
 end
