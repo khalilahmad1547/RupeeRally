@@ -31,7 +31,7 @@ module Api::V0::Accounts
     end
 
     def json_serialize
-      Api::V0::AccountsSerializer.render_as_hash(account)
+      Api::V0::AccountsSerializer.render_as_hash([account], root: :accounts)
     end
   end
 end
