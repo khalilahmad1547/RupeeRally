@@ -2,7 +2,7 @@
 
 module Api::V0
   class AuthController < ApiController
-    skip_before_action :authenticate_user!, only: %i[signup signin]
+    skip_before_action :authenticate_user!, only: %i[signup signin refresh]
 
     def signup
       Api::V0::Auth::SignupService.call(params.to_unsafe_h) do |result|
