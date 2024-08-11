@@ -101,3 +101,11 @@ RSpec.configure do |config|
   #   # as the one that triggered the failure.
   #   Kernel.srand config.seed
 end
+
+def valid_jwt(user)
+  "#{Constants::TOKEN_TYPE} #{Api::V0::Jwt::Encoder.call(user).first}"
+end
+
+def expired_jwt(user)
+  "#{Constants::TOKEN_TYPE} #{Api::V0::Jwt::Encoder.call(user, Time.now.utc.to_i - 1.hour.to_i).first}"
+end
