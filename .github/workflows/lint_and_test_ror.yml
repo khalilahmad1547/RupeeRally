@@ -16,6 +16,7 @@ jobs:
     env:
       RAILS_ENV: test
       DATABASE_URL: "postgres://rails:password@localhost:5432/rails_test"
+      SECRET_KEY_BASE: 1e7b9b55fdfd669a40671672eb0d450307f2b2cd123f6b7d9df6bb01a34eb3030c1a0d9109d79fa6690345833062358d1b86f3bad035b5af00d7f9baf1429f80
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

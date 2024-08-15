@@ -90,31 +90,33 @@ RSpec.describe '/api/v0/auth', type: :request do
     end
   end
 
-  # describe '/refresh' do
-  #   let(:user) { create(:user) }
-  #   let(:token_pair) { Api::V0::Jwt::Issuer.call(user) }
-  #   let(:access_token) { "#{Constants::TOKEN_TYPE} #{token_pair[:access_token]}" }
-  #   let(:refresh_token) { token_pair[:refresh_token].token }
-  #   let(:headers) do
-  #     {
-  #       Authorization: access_token
-  #     }
-  #   end
-  #   let(:params) do
-  #     {
-  #       access_token:,
-  #       refresh_token:
-  #     }
-  #   end
+  describe '/refresh' do
+    let(:user) { create(:user) }
+    let(:token_pair) { Api::V0::Jwt::Issuer.call(user) }
+    let(:access_token) do
+      "#{Constants::TOKEN_TYPE} #{Api::V0::Jwt::Encoder.call(user, Time.now.utc.to_i - 1.hour.to_i)}"
+    end
+    let(:refresh_token) { token_pair[:refresh_token].token }
+    let(:headers) do
+      {
+        Authorization: access_token
+      }
+    end
+    let(:params) do
+      {
+        access_token:,
+        refresh_token:
+      }
+    end
 
-  #   before { post '/api/v0/auth/refresh', headers:, params: }
+    before { post '/api/v0/auth/refresh', headers:, params: }
 
-  #   describe 'success' do
-  #     context 'when access_token & refresh_token are valid' do
-  #       it 'returns new access_token' do
-  #         expect(response).to be_created
-  #       end
-  #     end
-  #   end
-  # end
+    describe 'success' do
+      context 'when access_token & refresh_token are valid' do
+        it 'returns new access_token' do
+          expect(response).to be_created
+        end
+      end
+    end
+  end
 end

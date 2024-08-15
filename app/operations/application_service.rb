@@ -19,6 +19,7 @@ module ApplicationService
 
   module InstanceMethods
     include Dry::Monads[:result, :do]
+    include Pagy::Backend
     ValidationError = Class.new(StandardError)
 
     class Contract
@@ -49,6 +50,13 @@ module ApplicationService
 
     def error_message(key, error)
       { key => [error] }
+    end
+
+    def paginate(records, page, per_page)
+      page_no = page || Constants::DEFAULT_PAGE
+      per_page_no = per_page || Constants::DEFAULT_PER_PAGE
+      _, items = pagy(records, page: page_no, limit: per_page_no)
+      items
     end
   end
 end

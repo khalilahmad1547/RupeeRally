@@ -20,8 +20,8 @@ module ErrorHandler
 
   private
 
-  def success_response(data, status: :ok)
-    render json: { success: true, data: JSON.parse(data) }, status:
+  def success_response(data = {}, status: :ok)
+    render json: { success: true, data: }, status:
   end
 
   def process_standard_error(exception)

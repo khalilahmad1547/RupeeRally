@@ -41,6 +41,8 @@ gem 'redis', '>= 4.0.1'
 
 gem 'rack-cors'
 
+gem 'pagy', '~> 9.0', '>= 9.0.5'
+
 gem 'devise', '~> 4.9'
 gem 'jwt', '~> 2.8', '>= 2.8.2'
 gem 'omniauth', '~> 2.1', '>= 2.1.2'
@@ -59,9 +61,12 @@ group :development, :test do
   gem 'faker', '~> 3.4'
   gem 'json_matchers', '~> 0.11.1'
   gem 'rspec-rails', '~> 6.1'
+  gem 'simplecov', require: false
 end
 
 group :development do
+  gem 'better_errors'
+  gem 'binding_of_caller'
   gem 'html2haml'
   gem 'rubocop', require: false
   gem 'rubocop-rails', require: false
