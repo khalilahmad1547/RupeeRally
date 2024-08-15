@@ -198,4 +198,51 @@ RSpec.describe '/api/v0/accounts', type: :request do
       end
     end
   end
+
+  describe 'PATCH#update' do
+    let(:user) { create(:user) }
+    let(:access_token) { valid_jwt(user) }
+    let(:headers) do
+      {
+        Authorization: access_token
+      }
+    end
+    let(:accounts) { create_list(:account, 100, user:) }
+    let(:selected_account) { accounts.sample }
+    let(:updated_name) { 'other_account' }
+    let(:updated_initial_balance) { 100 }
+    let(:params) do
+      {
+        name: updated_name,
+        initial_balance_cents: updated_initial_balance
+      }
+    end
+
+    before { patch "/api/v0/accounts/#{selected_account.id}", params:, headers: }
+
+    describe 'success' do
+      context 'when account id is valid' do
+        it 'updates account' do
+          expect(response).to be_ok
+          expect(response).to match_json_schema('v0/accounts/update')
+          account = Account.find_by(id: selected_account.id)
+          expect(account.name).to eql(updated_name)
+          expect(account.initial_balance_cents).to eql(updated_initial_balance)
+        end
+      end
+    end
+
+    describe 'failure' do
+      include_context 'forbidden'
+      include_context 'unauthorized'
+
+      context 'when account id is not valid' do
+        let(:selected_account) { create(:account) }
+
+        it 'returns not_found' do
+          expect(response).to be_not_found
+        end
+      end
+    end
+  end
 end
