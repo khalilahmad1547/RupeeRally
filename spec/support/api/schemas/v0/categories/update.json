@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "required": [
+    "success",
+    "data"
+  ],
+  "properties": {
+    "success": {
+      "type": "boolean"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "categories"
+      ],
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "amount_cents",
+              "category_type",
+              "name"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "amount_cents": {
+                "type": "integer"
+              },
+              "category_type": {
+                "type": "string",
+                "enum": [
+                  "income",
+                  "expense"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

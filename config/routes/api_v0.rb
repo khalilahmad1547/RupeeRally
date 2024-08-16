@@ -13,5 +13,6 @@ namespace :api do
     end
 
     resources :accounts, only: api_only_routes
+    resources :categories, only: api_only_routes
   end
 end
