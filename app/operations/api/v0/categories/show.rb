@@ -14,24 +14,24 @@ module Api::V0::Categories
       @params = params
       @current_user = current_user
 
-      @account = yield fetch_account
+      @category = yield fetch_category
       Success(json_serialize)
     end
 
     private
 
-    attr_reader :params, :current_user, :account
+    attr_reader :params, :current_user, :category
 
-    def fetch_account
-      @account = current_user.accounts.find_by(id: params[:id])
+    def fetch_category
+      @category = current_user.categories.find_by(id: params[:id])
 
-      return Success(account) if account
+      return Success(category) if category
 
       Failure(:not_found)
     end
 
     def json_serialize
-      Api::V0::AccountsSerializer.render_as_hash([account], root: :accounts)
+      Api::V0::CategoriesSerializer.render_as_hash([category], root: :categories)
     end
   end
 end
