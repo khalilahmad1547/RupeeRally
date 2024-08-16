@@ -6,8 +6,14 @@ module Api::V0::Transactions
 
     class Contract < ApplicationContract
       params do
-        required(:name).filled(:string)
-        optional(:initial_balance_cents).maybe(:integer)
+        required(:description).filled(:string)
+        required(:transaction_type).filled(:string, included_in?: UserTransaction.transaction_types.keys)
+        required(:amount_cents).filled(:integer)
+        required(:account_id).filled(:integer)
+        required(:category_id).filled(:integer)
+        optional(:divide_on).maybe(:array)
+        optional(:division_method).value(:string, included_in?: Transaction.divided_bies.keys)
+        optional(:user_share).maybe(:hash)
       end
     end
 
@@ -15,22 +21,15 @@ module Api::V0::Transactions
       @params = params
       @current_user = current_user
 
-      yield create_account
-      Success(json_serialize)
+      puts "** #{params}"
+      Success()
     end
 
     private
 
     attr_reader :params, :current_user, :account
 
-    def create_account
-      initial_balance_cents = params[:initial_balance_cents] || 0
-      @account = Account.new(name: params[:name], initial_balance_cents:, user: current_user)
-
-      return Success(account) if account.save
-
-      Failure(account.errors.full_messages)
-    end
+    def create_transaction; end
 
     def json_serialize
       Api::V0::AccountsSerializer.render_as_hash([account], root: :accounts)
