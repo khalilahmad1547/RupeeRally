@@ -7,8 +7,8 @@ module Api::V0::Categories
     class Contract < ApplicationContract
       params do
         required(:id).filled(:integer)
-        required(:name).filled(:string)
-        optional(:initial_balance_cents).maybe(:integer)
+        optional(:name).maybe(:string)
+        optional(:category_type).maybe(:string)
       end
     end
 
@@ -16,34 +16,38 @@ module Api::V0::Categories
       @params = params
       @current_user = current_user
 
-      @account = yield fetch_account
-      @account = yield update_account
+      @category = yield fetch_category
+      @category = yield update_category
       Success(json_serialize)
     end
 
     private
 
-    attr_reader :params, :current_user, :account
+    attr_reader :params, :current_user, :category
 
-    def fetch_account
-      @account = current_user.accounts.find_by(id: params[:id])
+    def fetch_category
+      @category = current_user.categories.find_by(id: params[:id])
 
-      return Success(account) if account
+      return Success(category) if category
 
       Failure(:not_found)
     end
 
-    def update_account
-      initial_balance_cents = params[:initial_balance_cents] || account.initial_balance_cents
+    def update_category
       name = params[:name]
+      category_type = params[:category_type]
 
-      return Success(account.reload) if account.update(name:, initial_balance_cents:)
+      return Success(category.reload) if require_update? && category.update(name:, category_type:)
 
-      Failure(account.errors.full_messages)
+      Failure(category.errors.full_messages)
+    end
+
+    def require_update?
+      params[:name] || params[:category_type]
     end
 
     def json_serialize
-      Api::V0::AccountsSerializer.render_as_hash([account], root: :accounts)
+      Api::V0::CategoriesSerializer.render_as_hash([category], root: :categories)
     end
   end
 end
