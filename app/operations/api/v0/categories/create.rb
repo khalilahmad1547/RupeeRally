@@ -7,7 +7,7 @@ module Api::V0::Categories
     class Contract < ApplicationContract
       params do
         required(:name).filled(:string)
-        optional(:initial_balance_cents).maybe(:integer)
+        required(:category_type).filled(:string)
       end
     end
 
@@ -15,25 +15,24 @@ module Api::V0::Categories
       @params = params
       @current_user = current_user
 
-      yield create_account
+      yield create_category
       Success(json_serialize)
     end
 
     private
 
-    attr_reader :params, :current_user, :account
+    attr_reader :params, :current_user, :category
 
-    def create_account
-      initial_balance_cents = params[:initial_balance_cents] || 0
-      @account = Account.new(name: params[:name], initial_balance_cents:, user: current_user)
+    def create_category
+      @category = Category.new(name: params[:name], category_type: params[:category_type], user: current_user)
 
-      return Success(account) if account.save
+      return Success(category) if category.save
 
-      Failure(account.errors.full_messages)
+      Failure(category.errors.full_messages)
     end
 
     def json_serialize
-      Api::V0::AccountsSerializer.render_as_hash([account], root: :accounts)
+      Api::V0::CategoriesSerializer.render_as_hash([category], root: :categories)
     end
   end
 end
