@@ -16,27 +16,27 @@ module Api::V0::Categories
     def execute(params, current_user:)
       @params = params
       @current_user = current_user
-      @accounts = current_user.accounts
+      @categories = current_user.categories
 
-      records = process_accounts
+      records = process_categories
       Success(json_serialize(records))
     end
 
     private
 
-    attr_reader :params, :current_user, :accounts
+    attr_reader :params, :current_user, :categories
 
-    def process_accounts
-      @accounts = accounts.order(Arel.sql(sort_query))
-      paginate(accounts, params[:page], params[:per_page])
+    def process_categories
+      @categories = categories.order(Arel.sql(sort_query))
+      paginate(categories, params[:page], params[:per_page])
     end
 
     def sort_query
-      "accounts.#{sort_by} #{sort_direction}"
+      "categories.#{sort_by} #{sort_direction}"
     end
 
     def sort_by
-      permitted_columns = Account.column_names
+      permitted_columns = Category.column_names
       return params[:sort_by] if permitted_columns.include? params[:sort_by]
 
       'name'
@@ -49,12 +49,12 @@ module Api::V0::Categories
     end
 
     def json_serialize(records)
-      Api::V0::AccountsSerializer.render_as_hash(records, root: :accounts, meta: meta_date)
+      Api::V0::CategoriesSerializer.render_as_hash(records, root: :categories, meta: meta_date)
     end
 
     def meta_date
       {
-        total: accounts.count
+        total: categories.count
       }
     end
   end
