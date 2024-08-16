@@ -1,7 +1,8 @@
 FactoryBot.define do
   factory :category do
-    name { 'Food' }
+    sequence(:name) { |n| "Category##{n}" }
     amount_cents { Faker::Number.number(digits: 5) }
-    category_type { 1 }
+    category_type { %i[income expense].sample }
+    user { create(:user) }
   end
 end
