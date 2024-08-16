@@ -14,27 +14,27 @@ module Api::V0::Categories
       @params = params
       @current_user = current_user
 
-      @account = yield fetch_account
-      @account = yield destroy_account
+      @category = yield fetch_category
+      @category = yield destroy_category
       Success()
     end
 
     private
 
-    attr_reader :params, :current_user, :account
+    attr_reader :params, :current_user, :category
 
-    def fetch_account
-      @account = current_user.accounts.find_by(id: params[:id])
+    def fetch_category
+      @category = current_user.categories.find_by(id: params[:id])
 
-      return Success(account) if account
+      return Success(category) if category
 
       Failure(:not_found)
     end
 
-    def destroy_account
-      return Success() if account.destroy
+    def destroy_category
+      return Success() if category.destroy
 
-      Failure(account.errors.full_messages)
+      Failure(category.errors.full_messages)
     end
   end
 end
