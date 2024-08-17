@@ -21,18 +21,42 @@ module Api::V0::Transactions
       @params = params
       @current_user = current_user
 
-      puts "** #{params}"
+      yield validate_account_id
+      yield validate_category_id
+      yield create_transaction
       Success()
     end
 
     private
 
-    attr_reader :params, :current_user, :account
+    attr_reader :params, :current_user, :account, :category
 
-    def create_transaction; end
+    def validate_account_id
+      account_id = params[:account_id]
+      @account = current_user.accounts.find_by(id: account_id)
+      return Success() if account_id && @account
 
-    def json_serialize
-      Api::V0::AccountsSerializer.render_as_hash([account], root: :accounts)
+      Failure(:account_not_found)
+    end
+
+    def validate_category_id
+      category_id = params[:category_id]
+      @category = current_user.categories.find_by(id: category_id)
+      return Success() if category_id && category
+
+      Failure(:category_not_found)
+    end
+
+    def create_transaction
+      Api::V0::Transactions::Individual.create(current_user,
+                                               params[:description],
+                                               params[:transaction_type],
+                                               params[:amount_cents],
+                                               account,
+                                               category)
+      Success()
+    rescue StandardError => e
+      Failure(e.message)
     end
   end
 end
