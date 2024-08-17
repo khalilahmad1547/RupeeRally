@@ -19,7 +19,9 @@ module Api::V0
 
     def create
       Transactions::Create.call(params.to_unsafe_h, current_user: @current_user) do |result|
-        result.success { |transaction| success_response(transaction, status: :created) }
+        result.success { success_response }
+        result.failure(:account_not_found) { not_found_response('Account not found') }
+        result.failure(:category_not_found) { not_found_response('Category not found') }
         result.failure { |errors| unprocessable_entity(errors) }
       end
     end
