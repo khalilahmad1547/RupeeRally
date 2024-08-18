@@ -14,27 +14,51 @@ module Api::V0::Transactions
       @params = params
       @current_user = current_user
 
-      @account = yield fetch_account
-      @account = yield destroy_account
+      @transaction = yield fetch_transaction
+      set_required_variables
+      yield destroy_transaction
       Success()
     end
 
     private
 
-    attr_reader :params, :current_user, :account
+    attr_reader :params,
+                :current_user,
+                :transaction,
+                :transaction_type,
+                :account,
+                :amount_cents
 
-    def fetch_account
-      @account = current_user.accounts.find_by(id: params[:id])
+    def fetch_transaction
+      @transaction = current_user.transactions.includes(:user_transactions).where('transactions.id = ? ',
+                                                                                  params[:id]).first
 
-      return Success(account) if account
+      return Success(transaction) if transaction
 
       Failure(:not_found)
     end
 
-    def destroy_account
-      return Success() if account.destroy
+    def set_required_variables
+      user_transaction = transaction.user_transactions.first
+      @transaction_type = user_transaction.transaction_type
+      @account = user_transaction.account
+      @amount_cents = user_transaction.amount_cents
+    end
 
-      Failure(account.errors.full_messages)
+    def destroy_transaction
+      ActiveRecord::Base.transaction do
+        transaction.destroy!
+        update_account
+      end
+
+      Success()
+    rescue StandardError => e
+      Failure(e.message)
+    end
+
+    def update_account
+      transaction_type == 'expense' ? account.record_expense(-amount_cents) : account.record_income(-amount_cents)
+      account.save!
     end
   end
 end
