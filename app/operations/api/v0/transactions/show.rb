@@ -14,24 +14,25 @@ module Api::V0::Transactions
       @params = params
       @current_user = current_user
 
-      @account = yield fetch_account
+      @transaction = yield fetch_transaction
       Success(json_serialize)
     end
 
     private
 
-    attr_reader :params, :current_user, :account
+    attr_reader :params, :current_user, :transaction
 
-    def fetch_account
-      @account = current_user.accounts.find_by(id: params[:id])
+    def fetch_transaction
+      @transaction = current_user.transactions.includes(:user_transactions).where('transactions.id = ? ',
+                                                                                  params[:id]).first
 
-      return Success(account) if account
+      return Success(transaction) if transaction
 
       Failure(:not_found)
     end
 
     def json_serialize
-      Api::V0::AccountsSerializer.render_as_hash([account], root: :accounts)
+      Api::V0::TransactionsSerializer.render_as_hash([transaction], root: :transactions)
     end
   end
 end
