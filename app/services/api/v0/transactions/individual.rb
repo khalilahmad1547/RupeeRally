@@ -18,6 +18,7 @@ module Api::V0::Transactions
                                                    paid_by: current_user)
         user_transaction.expense? ? account.record_expense(amount_cents) : account.record_income(amount_cents)
         account.save!
+        parent_transaction
       end
     end
   end
