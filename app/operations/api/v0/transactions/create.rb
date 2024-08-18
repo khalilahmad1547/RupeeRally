@@ -23,8 +23,8 @@ module Api::V0::Transactions
 
       yield validate_account_id
       yield validate_category_id
-      yield create_transaction
-      Success()
+      transaction = yield create_transaction
+      Success(json_serialize(transaction))
     end
 
     private
@@ -48,15 +48,19 @@ module Api::V0::Transactions
     end
 
     def create_transaction
-      Api::V0::Transactions::Individual.create(current_user,
-                                               params[:description],
-                                               params[:transaction_type],
-                                               params[:amount_cents],
-                                               account,
-                                               category)
-      Success()
+      transaction = Api::V0::Transactions::Individual.create(current_user,
+                                                             params[:description],
+                                                             params[:transaction_type],
+                                                             params[:amount_cents],
+                                                             account,
+                                                             category)
+      Success(transaction)
     rescue StandardError => e
       Failure(e.message)
+    end
+
+    def json_serialize(records)
+      Api::V0::TransactionsSerializer.render_as_hash([records], root: :transactions)
     end
   end
 end
