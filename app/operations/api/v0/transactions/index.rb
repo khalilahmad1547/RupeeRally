@@ -16,30 +16,30 @@ module Api::V0::Transactions
     def execute(params, current_user:)
       @params = params
       @current_user = current_user
-      @accounts = current_user.accounts
+      @transactions = current_user.transactions.includes(:user_transactions)
 
-      records = process_accounts
+      records = process_transactions
       Success(json_serialize(records))
     end
 
     private
 
-    attr_reader :params, :current_user, :accounts
+    attr_reader :params, :current_user, :transactions
 
-    def process_accounts
-      @accounts = accounts.order(Arel.sql(sort_query))
-      paginate(accounts, params[:page], params[:per_page])
+    def process_transactions
+      @transactions = transactions.order(Arel.sql(sort_query))
+      paginate(transactions, params[:page], params[:per_page])
     end
 
     def sort_query
-      "accounts.#{sort_by} #{sort_direction}"
+      "transactions.#{sort_by} #{sort_direction}"
     end
 
     def sort_by
-      permitted_columns = Account.column_names
+      permitted_columns = Transaction.column_names
       return params[:sort_by] if permitted_columns.include? params[:sort_by]
 
-      'name'
+      'created_at'
     end
 
     def sort_direction
@@ -49,12 +49,12 @@ module Api::V0::Transactions
     end
 
     def json_serialize(records)
-      Api::V0::AccountsSerializer.render_as_hash(records, root: :accounts, meta: meta_date)
+      Api::V0::TransactionsSerializer.render_as_hash(records, root: :transactions, meta: meta_date)
     end
 
     def meta_date
       {
-        total: accounts.count
+        total: transactions.count
       }
     end
   end
