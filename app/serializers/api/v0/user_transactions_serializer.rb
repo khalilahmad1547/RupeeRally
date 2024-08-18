@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Api::V0
-  class TransactionsSerializer < Blueprinter::Base
+  class UserTransactionsSerializer < Blueprinter::Base
     identifier :id
     fields :description,
            :transaction_type,
