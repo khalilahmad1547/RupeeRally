@@ -8,5 +8,6 @@ module Api::V0
            :divided_by,
            :selected_date,
            :selected_time
+    association :user_transactions, blueprint: Api::V0::UserTransactionsSerializer
   end
 end
