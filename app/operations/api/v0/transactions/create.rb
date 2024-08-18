@@ -48,7 +48,7 @@ module Api::V0::Transactions
     end
 
     def create_transaction
-      transaction = Api::V0::Transactions::Individual::Create.call(current_user, params, account, category)
+      transaction = Api::V0::Transactions::CreateIndividualTransaction.call(current_user, params, account, category)
       Success(transaction)
     rescue StandardError => e
       Failure(e.message)
