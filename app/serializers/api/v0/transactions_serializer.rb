@@ -8,6 +8,7 @@ module Api::V0
            :divided_by,
            :selected_date,
            :selected_time
+    field :created_at, datetime_format: '%H:%M %d:%m:%Y'
     association :user_transactions, blueprint: Api::V0::UserTransactionsSerializer
   end
 end
