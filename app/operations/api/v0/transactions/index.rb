@@ -45,7 +45,7 @@ module Api::V0::Transactions
     def sort_direction
       return params[:sort_direction] if Constants::ORDER_DIRECTIONS.include?(params[:sort_direction])
 
-      'asc'
+      'desc'
     end
 
     def json_serialize(records)
