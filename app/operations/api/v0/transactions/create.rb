@@ -50,7 +50,7 @@ module Api::V0::Transactions
     def create_transaction
       transaction = Api::V0::Transactions::CreateIndividualTransaction.call(current_user, params, account, category)
       Success(transaction)
-    rescue StandardError => e
+    rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)
     end
 
