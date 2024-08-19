@@ -7,8 +7,14 @@ module Api::V0::Transactions
     class Contract < ApplicationContract
       params do
         required(:id).filled(:integer)
-        required(:name).filled(:string)
-        optional(:initial_balance_cents).maybe(:integer)
+        required(:description).filled(:string)
+        required(:transaction_type).filled(:string, included_in?: UserTransaction.transaction_types.keys)
+        required(:amount_cents).filled(:integer)
+        required(:account_id).filled(:integer)
+        required(:category_id).filled(:integer)
+        optional(:divide_on).maybe(:array)
+        optional(:division_method).value(:string, included_in?: Transaction.divided_bies.keys)
+        optional(:user_share).maybe(:hash)
       end
     end
 
@@ -16,34 +22,56 @@ module Api::V0::Transactions
       @params = params
       @current_user = current_user
 
-      @account = yield fetch_account
-      @account = yield update_account
-      Success(json_serialize)
+      yield fetch_parent_transaction
+      yield validate_account_id
+      yield validate_category_id
+      records = yield update_transaction
+      Success(json_serialize(records))
     end
 
     private
 
-    attr_reader :params, :current_user, :account
+    attr_reader :params, :current_user, :account, :category, :parent_transaction
 
-    def fetch_account
-      @account = current_user.accounts.find_by(id: params[:id])
+    def fetch_parent_transaction
+      @parent_transaction = current_user.transactions.includes(:user_transactions).where('transactions.id = ? ',
+                                                                                         params[:id]).first
 
-      return Success(account) if account
+      return Success(parent_transaction) if parent_transaction
 
       Failure(:not_found)
     end
 
-    def update_account
-      initial_balance_cents = params[:initial_balance_cents] || account.initial_balance_cents
-      name = params[:name]
+    def validate_account_id
+      account_id = params[:account_id]
+      @account = current_user.accounts.find_by(id: account_id)
+      return Success() if account_id && @account
 
-      return Success(account.reload) if account.update(name:, initial_balance_cents:)
-
-      Failure(account.errors.full_messages)
+      Failure(:account_not_found)
     end
 
-    def json_serialize
-      Api::V0::AccountsSerializer.render_as_hash([account], root: :accounts)
+    def validate_category_id
+      category_id = params[:category_id]
+      @category = current_user.categories.find_by(id: category_id)
+      return Success() if category_id && category
+
+      Failure(:category_not_found)
+    end
+
+    def update_transaction
+      extra_params = {
+        account: @account,
+        category: @category,
+        parent_transaction: @parent_transaction
+      }
+      transaction = Api::V0::Transactions::UpdateIndividualTransaction.call(current_user, params, extra_params)
+      Success(transaction)
+    rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
+      Failure(e.message)
+    end
+
+    def json_serialize(records)
+      Api::V0::TransactionsSerializer.render_as_hash([records], root: :transactions)
     end
   end
 end
