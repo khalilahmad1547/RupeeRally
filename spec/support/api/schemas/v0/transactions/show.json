@@ -1,0 +1,113 @@
+{
+  "type": "object",
+  "required": [
+    "success",
+    "data"
+  ],
+  "properties": {
+    "success": {
+      "type": "boolean"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "transactions"
+      ],
+      "properties": {
+        "transactions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "amount_cents",
+              "created_at",
+              "description",
+              "divided_by",
+              "selected_date",
+              "selected_time",
+              "user_transactions"
+            ],
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "amount_cents": {
+                "type": "integer"
+              },
+              "created_at": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "divided_by": {
+                "type": "string"
+              },
+              "selected_date": {
+                "type": "string"
+              },
+              "selected_time": {
+                "type": "string"
+              },
+              "user_transactions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "account_id",
+                    "amount_cents",
+                    "category_id",
+                    "description",
+                    "paid_by_id",
+                    "status",
+                    "transaction_id",
+                    "transaction_type",
+                    "user_id",
+                    "user_share"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "account_id": {
+                      "type": "integer"
+                    },
+                    "amount_cents": {
+                      "type": "integer"
+                    },
+                    "category_id": {
+                      "type": "integer"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "paid_by_id": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "transaction_id": {
+                      "type": "integer"
+                    },
+                    "transaction_type": {
+                      "type": "string"
+                    },
+                    "user_id": {
+                      "type": "integer"
+                    },
+                    "user_share": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
