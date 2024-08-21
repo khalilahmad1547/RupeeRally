@@ -7,4 +7,6 @@ module Constants
   DEFAULT_PER_PAGE = 50
   DEFAULT_PAGE = 1
   ORDER_DIRECTIONS = %w[asc ASC desc DESC].freeze
+  API_DATE_FROMAT = '%d/%m/%Y'
+  API_TIME_FROMAT = '%H:%M'
 end
