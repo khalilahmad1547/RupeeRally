@@ -25,7 +25,8 @@ module Api::V0::Accounts
 
     def create_account
       initial_balance_cents = params[:initial_balance_cents] || 0
-      @account = Account.new(name: params[:name], initial_balance_cents:, user: current_user)
+      @account = Account.new(name: params[:name], balance_cents: initial_balance_cents, initial_balance_cents:,
+                             user: current_user)
 
       return Success(account) if account.save
 

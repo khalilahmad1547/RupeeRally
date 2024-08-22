@@ -131,7 +131,7 @@ RSpec.describe '/api/v0/accounts', type: :request do
         it 'creates and return new account with given initial balance' do
           expect(response).to be_created
           expect(response.parsed_body['data']['accounts'].count).to eq(1)
-          expect(response.parsed_body['data']['accounts'].first['balance_cents']).to eq(0)
+          expect(response.parsed_body['data']['accounts'].first['balance_cents']).to eq(initial_balance_cents)
           expect(response.parsed_body['data']['accounts'].first['name']).to eq(account_name)
           expect(response.parsed_body['data']['accounts'].first['total_expense_cents']).to eq(0)
           expect(response.parsed_body['data']['accounts'].first['total_income_cents']).to eq(0)
