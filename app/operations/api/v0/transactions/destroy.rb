@@ -52,7 +52,7 @@ module Api::V0::Transactions
       end
 
       Success()
-    rescue StandardError => e
+    rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)
     end
 
