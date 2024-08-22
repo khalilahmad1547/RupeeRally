@@ -225,7 +225,7 @@ RSpec.describe '/api/v0/transactions', type: :request do
           it 'deletes transaction and update account balance' do
             expect(response).to be_ok
             expect(response).to match_json_schema('v0/transactions/destroy')
-            expect(Transaction.find_by(id: selected_account.id)).to be_nil
+            expect(Transaction.find_by(id: transaction.id)).to be_nil
             selected_account.reload
             expect(selected_account.balance_cents).to eql(previous_balance - amount_cents)
             expect(selected_account.total_income_cents).to eql(previous_total_income - amount_cents)
@@ -239,7 +239,7 @@ RSpec.describe '/api/v0/transactions', type: :request do
           it 'deletes transaction and update account balance' do
             expect(response).to be_ok
             expect(response).to match_json_schema('v0/transactions/destroy')
-            expect(Transaction.find_by(id: selected_account.id)).to be_nil
+            expect(Transaction.find_by(id: transaction.id)).to be_nil
             selected_account.reload
             expect(selected_account.balance_cents).to eql(previous_balance + amount_cents)
             expect(selected_account.total_income_cents).to eql(previous_total_income)
@@ -255,6 +255,173 @@ RSpec.describe '/api/v0/transactions', type: :request do
 
       context 'when transaction id is not valid' do
         let(:transaction) { create(:transaction) }
+
+        it 'returns not_found' do
+          expect(response).to be_not_found
+        end
+      end
+    end
+  end
+
+  describe 'PATCH#update' do
+    let(:user) { create(:user) }
+    let(:access_token) { valid_jwt(user) }
+    let(:headers) do
+      {
+        Authorization: access_token
+      }
+    end
+    let(:accounts) { create_list(:account, 10, user:) }
+    let(:account_01) { accounts.sample }
+    let(:account_01_id) { account_01.id }
+    let!(:account_01_previous_balance) { account_01.balance_cents }
+    let!(:account_01_previous_total_income) { account_01.total_income_cents }
+    let!(:account_01_previous_total_expense) { account_01.total_expense_cents }
+    let(:account_02) { accounts.sample }
+    let(:account_02_id) { account_02.id }
+    let!(:account_02_previous_balance) { account_02.balance_cents }
+    let!(:account_02_previous_total_income) { account_02.total_income_cents }
+    let!(:account_02_previous_total_expense) { account_02.total_expense_cents }
+    let(:previous_amount) { Faker::Number.number(digits: 5) }
+    let(:updated_amount) { Faker::Number.number(digits: 5) }
+    let(:transaction) { create(:transaction, user:, divided_by: 0, amount_cents: previous_amount) }
+    let(:category) { create(:category, user:) }
+    let(:transaction_type) { 'income' }
+    let!(:user_transaction) do
+      create(:user_transaction,
+             user:,
+             paid_by: user,
+             transaction_type:,
+             account: account_01,
+             parent_transaction: transaction,
+             amount_cents: previous_amount,
+             category:)
+    end
+    let(:params) do
+      {
+        description: transaction.description,
+        transaction_type: user_transaction.transaction_type,
+        amount_cents: updated_amount,
+        account_id: account_01_id,
+        category_id: category.id
+      }
+    end
+
+    before { patch "/api/v0/transactions/#{transaction.id}", params:, headers: }
+
+    context 'success' do
+      context 'when account remain same transaction type & amount is changed' do
+        context 'with income transaction' do
+          it 'should update account balance and total income' do
+            expect(response).to be_ok
+            expect(response).to match_json_schema('v0/transactions/update')
+            account_01.reload
+            expect(account_01.balance_cents).to eql(account_01_previous_balance - previous_amount + updated_amount)
+            expect(account_01.total_income_cents).to eql(account_01_previous_total_income - previous_amount + updated_amount)
+            expect(account_01.total_expense_cents).to eql(account_01_previous_total_expense)
+          end
+        end
+
+        context 'with expense transaction' do
+          let(:transaction_type) { 'expense' }
+
+          it 'should update account balance and total expense' do
+            expect(response).to be_ok
+            expect(response).to match_json_schema('v0/transactions/update')
+            account_01.reload
+            expect(account_01.balance_cents).to eql(account_01_previous_balance + previous_amount - updated_amount)
+            expect(account_01.total_income_cents).to eql(account_01_previous_total_income)
+            expect(account_01.total_expense_cents).to eql(account_01_previous_total_expense - previous_amount + updated_amount)
+          end
+        end
+      end
+
+      context 'when account is changed' do
+        let(:params) do
+          {
+            description: transaction.description,
+            transaction_type: user_transaction.transaction_type,
+            amount_cents: updated_amount,
+            account_id: account_02_id,
+            category_id: category.id
+          }
+        end
+
+        context 'with income transaction' do
+          it 'should update both accounts balances and total income' do
+            expect(response).to be_ok
+            expect(response).to match_json_schema('v0/transactions/update')
+            account_01.reload
+            account_02.reload
+            expect(account_01.balance_cents).to eql(account_01_previous_balance - previous_amount)
+            expect(account_01.total_income_cents).to eql(account_01_previous_total_income - previous_amount)
+            expect(account_01.total_expense_cents).to eql(account_01_previous_total_expense)
+            expect(account_02.balance_cents).to eql(account_02_previous_balance + updated_amount)
+            expect(account_02.total_income_cents).to eql(account_02_previous_total_income + updated_amount)
+            expect(account_02.total_expense_cents).to eql(account_02_previous_total_expense)
+          end
+        end
+
+        context 'with expense transaction' do
+          let(:transaction_type) { 'expense' }
+
+          it 'should update account balance and total expense' do
+            expect(response).to be_ok
+            expect(response).to match_json_schema('v0/transactions/update')
+            account_01.reload
+            account_02.reload
+            expect(account_01.balance_cents).to eql(account_01_previous_balance + previous_amount)
+            expect(account_01.total_income_cents).to eql(account_01_previous_total_income)
+            expect(account_01.total_expense_cents).to eql(account_01_previous_total_expense - previous_amount)
+            expect(account_02.balance_cents).to eql(account_02_previous_balance - updated_amount)
+            expect(account_02.total_income_cents).to eql(account_02_previous_total_income)
+            expect(account_02.total_expense_cents).to eql(account_02_previous_total_expense + updated_amount)
+          end
+        end
+      end
+    end
+
+    context 'failure' do
+      include_context 'forbidden'
+      include_context 'unauthorized'
+
+      context 'when transaction id is not valid' do
+        let(:transaction) { create(:transaction) }
+
+        it 'returns not_found' do
+          puts "** #{response.parsed_body}"
+          expect(response).to be_not_found
+        end
+      end
+
+      context 'when account id is not valid' do
+        let(:account) { create(:account) }
+        let(:params) do
+          {
+            description: transaction.description,
+            transaction_type: user_transaction.transaction_type,
+            amount_cents: updated_amount,
+            account_id: account.id,
+            category_id: category.id
+          }
+        end
+
+        it 'returns not_found' do
+          expect(response).to be_not_found
+        end
+      end
+
+      context 'when category id is not valid' do
+        let(:category) { create(:category) }
+        let(:params) do
+          {
+            description: transaction.description,
+            transaction_type: user_transaction.transaction_type,
+            amount_cents: updated_amount,
+            account_id: account_01_id,
+            category_id: category.id
+          }
+        end
 
         it 'returns not_found' do
           expect(response).to be_not_found
