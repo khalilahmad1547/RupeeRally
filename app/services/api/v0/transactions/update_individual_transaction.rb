@@ -50,12 +50,20 @@ module Api::V0::Transactions
     end
 
     def revert_previous_account_change
-      user_transaction.expense? ? previous_account.record_expense(-previous_amount) : previous_account.record_income(-previous_amount)
+      if user_transaction.expense?
+        previous_account.record_expense(-previous_amount)
+      else
+        previous_account.record_income(-previous_amount)
+      end
       previous_account.save!
     end
 
     def add_updated_amount_to_account
-      transaction_type == 'expense' ? account.reload.record_expense(amount_cents) : account.reload.record_income(amount_cents)
+      if transaction_type == 'expense'
+        account.reload.record_expense(amount_cents)
+      else
+        account.reload.record_income(amount_cents)
+      end
       account.save!
     end
 
