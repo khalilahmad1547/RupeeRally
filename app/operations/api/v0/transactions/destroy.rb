@@ -15,7 +15,6 @@ module Api::V0::Transactions
       @current_user = current_user
 
       @transaction = yield fetch_transaction
-      set_required_variables
       yield destroy_transaction
       Success()
     end
@@ -38,27 +37,11 @@ module Api::V0::Transactions
       Failure(:not_found)
     end
 
-    def set_required_variables
-      user_transaction = transaction.user_transactions.first
-      @transaction_type = user_transaction.transaction_type
-      @account = user_transaction.account
-      @amount_cents = user_transaction.amount_cents
-    end
-
     def destroy_transaction
-      ActiveRecord::Base.transaction do
-        transaction.destroy!
-        update_account
-      end
-
+      Api::V0::Transactions::DeleteIndividualTransaction.call(transaction)
       Success()
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)
-    end
-
-    def update_account
-      transaction_type == 'expense' ? account.record_expense(-amount_cents) : account.record_income(-amount_cents)
-      account.save!
     end
   end
 end
