@@ -37,8 +37,17 @@ module Api::V0::Transactions
       Failure(:not_found)
     end
 
+    def delete_service
+      case transaction.transaction_type
+      when 'individual'
+        Api::V0::Transactions::DeleteIndividualTransaction
+      when 'transfer'
+        Api::V0::Transactions::DeleteTransferTransaction
+      end
+    end
+
     def destroy_transaction
-      Api::V0::Transactions::DeleteIndividualTransaction.call(transaction)
+      delete_service.call(transaction)
       Success()
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)
