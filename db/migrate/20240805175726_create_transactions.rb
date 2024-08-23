@@ -6,6 +6,7 @@ class CreateTransactions < ActiveRecord::Migration[7.1]
       t.integer :divided_by, null: false, default: 0
       t.string :selected_date, null: false, default: ''
       t.string :selected_time, null: false, default: ''
+      t.integer :transaction_type, null: false, default: 0
 
       t.timestamps
     end
