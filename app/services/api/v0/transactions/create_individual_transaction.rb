@@ -40,7 +40,8 @@ module Api::V0::Transactions
       @parent_transaction = Transaction.create!(user: current_user,
                                                 description:,
                                                 amount_cents:,
-                                                divided_by: :by_none)
+                                                divided_by: :by_none,
+                                                transaction_type: :individual)
     end
 
     def create_user_transaction
