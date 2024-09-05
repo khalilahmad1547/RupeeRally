@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Api::V0::Transfers
+module Api::V0::TransferTransactions
   class Update
     include ApplicationService
 
@@ -68,7 +68,7 @@ module Api::V0::Transfers
     end
 
     def update_transfer
-      transaction = Api::V0::Transactions::UpdateTransferTransaction.call(update_params)
+      transaction = Api::V0::TransferTransactions::UpdateService.call(update_params)
       Success(transaction)
     rescue ::CustomError, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)
