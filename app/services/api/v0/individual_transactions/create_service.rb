@@ -2,8 +2,8 @@
 
 module Api::V0::IndividualTransactions
   class CreateService < ::BaseService
-    def call(current_user, params, account, category)
-      set_params(current_user, params, account, category)
+    def call(params)
+      process_params(params)
 
       ActiveRecord::Base.transaction do
         create_parent_transaction
@@ -26,14 +26,14 @@ module Api::V0::IndividualTransactions
                 :parent_transaction,
                 :user_transaction
 
-    def set_params(current_user, params, account, category)
-      @current_user = current_user
+    def process_params(params)
       @params = params
+      @current_user = params[:current_user]
       @description = params[:description]
       @amount_cents = params[:amount_cents]
       @transaction_type = params[:transaction_type]
-      @account = account
-      @category = category
+      @account = params[:account]
+      @category = params[:category]
     end
 
     def create_parent_transaction

@@ -45,10 +45,21 @@ module Api::V0::IndividualTransactions
     end
 
     def create_transaction
-      transaction = Api::V0::IndividualTransactions::CreateService.call(current_user, params, account, category)
+      transaction = Api::V0::IndividualTransactions::CreateService.call(create_params)
       Success(transaction)
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)
+    end
+
+    def create_params
+      {
+        current_user:,
+        account:,
+        category:,
+        description: params[:description],
+        transaction_type: params[:transaction_type],
+        amount_cents: params[:amount_cents]
+      }
     end
 
     def json_serialize(records)
