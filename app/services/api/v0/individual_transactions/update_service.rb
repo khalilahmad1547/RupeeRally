@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Api::V0::Transactions
-  class UpdateIndividualTransaction < ::BaseService
+module Api::V0::IndividualTransactions
+  class UpdateService < ::BaseService
     def call(current_user, params, extra_params)
       set_params(current_user, params, extra_params)
 
