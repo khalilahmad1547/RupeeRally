@@ -56,7 +56,7 @@ module Api::V0::IndividualTransactions
     end
 
     def update_transaction
-      transaction = Api::V0::IndividualTransactions::UpdateService.call(update_params)
+      transaction = ::IndividualTransactions::UpdateService.call(update_params)
       Success(transaction)
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)

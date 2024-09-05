@@ -68,7 +68,7 @@ module Api::V0::TransferTransactions
     end
 
     def update_transfer
-      transaction = Api::V0::TransferTransactions::UpdateService.call(update_params)
+      transaction = ::TransferTransactions::UpdateService.call(update_params)
       Success(transaction)
     rescue ::CustomError, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)

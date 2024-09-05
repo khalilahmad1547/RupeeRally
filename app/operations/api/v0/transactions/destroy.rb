@@ -40,9 +40,9 @@ module Api::V0::Transactions
     def delete_service
       case transaction.transaction_type
       when 'individual'
-        Api::V0::IndividualTransactions::DeleteService
+        ::IndividualTransactions::DeleteService
       when 'transfer'
-        Api::V0::TransferTransactions::DeleteService
+        ::TransferTransactions::DeleteService
       end
     end
 

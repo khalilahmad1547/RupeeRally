@@ -9,7 +9,7 @@ module Api::V0
     private
 
     def authenticate_user!
-      current_user, decoded_token = Api::V0::Jwt::Authenticator.call(
+      current_user, decoded_token = Jwt::Authenticator.call(
         headers: request.headers
       )
 

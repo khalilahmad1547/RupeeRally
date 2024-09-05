@@ -49,7 +49,7 @@ module Api::V0::TransferTransactions
     end
 
     def create_transfer
-      transaction = Api::V0::TransferTransactions::CreateService.call(create_params)
+      transaction = ::TransferTransactions::CreateService.call(create_params)
       Success(transaction)
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)
