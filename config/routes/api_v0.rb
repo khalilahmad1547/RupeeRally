@@ -15,5 +15,6 @@ namespace :api do
     resources :accounts, only: api_only_routes
     resources :categories, only: api_only_routes
     resources :transactions, only: api_only_routes
+    resources :transfers, only: %i[create update destroy]
   end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Auth
-  class InvalidTokenError < StandardError
+  class InvalidTokenError < ::CustomError
     def message
       'jwt token is invalid'
     end
