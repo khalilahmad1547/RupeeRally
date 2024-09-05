@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Api::V0::Transactions
-  class CreateTransferTransaction < ::BaseService
+module Api::V0::TransferTransactions
+  class CreateService < ::BaseService
     def call(current_user, params, from_account, to_account)
       set_params(current_user, params, from_account, to_account)
 
