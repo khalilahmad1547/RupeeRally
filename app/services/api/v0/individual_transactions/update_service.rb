@@ -2,8 +2,8 @@
 
 module Api::V0::IndividualTransactions
   class UpdateService < ::BaseService
-    def call(current_user, params, extra_params)
-      set_params(current_user, params, extra_params)
+    def call(params)
+      process_params(params)
 
       ActiveRecord::Base.transaction do
         revert_previous_account_change
@@ -17,8 +17,7 @@ module Api::V0::IndividualTransactions
 
     private
 
-    attr_reader :current_user,
-                :params,
+    attr_reader :params,
                 :description,
                 :amount_cents,
                 :transaction_type,
@@ -26,15 +25,14 @@ module Api::V0::IndividualTransactions
                 :category,
                 :parent_transaction
 
-    def set_params(current_user, params, extra_params)
-      @current_user = current_user
+    def process_params(params)
       @params = params
       @description = params[:description]
       @amount_cents = params[:amount_cents]
       @transaction_type = params[:transaction_type]
-      @account = extra_params[:account]
-      @category = extra_params[:category]
-      @parent_transaction = extra_params[:parent_transaction]
+      @account = params[:account]
+      @category = params[:category]
+      @parent_transaction = params[:parent_transaction]
     end
 
     def user_transaction

@@ -56,15 +56,21 @@ module Api::V0::IndividualTransactions
     end
 
     def update_transaction
-      extra_params = {
-        account: @account,
-        category: @category,
-        parent_transaction: @parent_transaction
-      }
-      transaction = Api::V0::IndividualTransactions::UpdateService.call(current_user, params, extra_params)
+      transaction = Api::V0::IndividualTransactions::UpdateService.call(update_params)
       Success(transaction)
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)
+    end
+
+    def update_params
+      {
+        account:,
+        category:,
+        description: params[:description],
+        transaction_type: params[:transaction_type],
+        amount_cents: params[:amount_cents],
+        parent_transaction:
+      }
     end
 
     def json_serialize(records)
