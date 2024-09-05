@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Api::V0::IndividualTransactions
+module IndividualTransactions
   class CreateService < ::BaseService
     def call(params)
       process_params(params)

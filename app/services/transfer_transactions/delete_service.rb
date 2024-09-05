@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Api::V0::TransferTransactions
+module TransferTransactions
   class DeleteService < ::BaseService
     def call(parent_transaction)
       @parent_transaction = parent_transaction
