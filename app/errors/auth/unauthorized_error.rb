@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Auth
-  class UnauthorizedError < StandardError
+  class UnauthorizedError < ::CustomError
     def message
       'user is unauthorized'
     end
