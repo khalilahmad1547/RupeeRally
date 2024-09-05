@@ -2,15 +2,22 @@
 
 module Api::V0::Transactions
   class UpdateTransferTransaction < ::BaseService
-    def call(parent_transaction, params, from_account, to_account)
-      set_params(parent_transaction, params, from_account, to_account)
+    def call(params)
+      process_params(params)
+      set_user_transactions
+      set_previous_accounts
+      set_current_accounts
+      validate_not_same_account
       update_transfer
       parent_transaction.reload
     end
 
     private
 
-    attr_reader :parent_transaction,
+    attr_reader :params,
+                :parent_transaction,
+                :expense_transaction,
+                :income_transaction,
                 :from_account,
                 :to_account,
                 :description,
@@ -19,15 +26,39 @@ module Api::V0::Transactions
                 :previous_to_acc,
                 :previous_amount
 
-    def set_params(parent_transaction, params, from_account, to_account)
-      @parent_transaction = parent_transaction
-      @from_account = from_account
-      @to_account = to_account
+    def process_params(params)
+      @params = params
+      @parent_transaction = params[:parent_transaction]
       @description = params[:description]
       @amount_cents = params[:amount_cents]
-      @previous_from_acc = parent_transaction.user_transactions.expense.account
-      @previous_to_acc = parent_transaction.user_transactions.income.account
       @previous_amount = parent_transaction.amount_cents
+    end
+
+    def set_user_transactions
+      @expense_transaction = parent_transaction.user_transactions.expense.first
+      @income_transaction = parent_transaction.user_transactions.income.first
+    end
+
+    def set_previous_accounts
+      @previous_from_acc = expense_transaction.account
+      @previous_to_acc = income_transaction.account
+    end
+
+    def set_current_accounts
+      @from_account = params[:from_account].presence || previous_from_acc
+      @to_account = params[:to_account].presence || previous_to_acc
+    end
+
+    def validate_not_same_account
+      raise Transfers::SameAccountError if same_from_acc? || same_to_acc?
+    end
+
+    def same_from_acc?
+      from_account.id != previous_from_acc.id && from_account.id != previous_to_acc.id
+    end
+
+    def same_to_acc?
+      to_account.id != previous_to_acc.id && to_account.id == previous_from_acc.id
     end
 
     def update_transfer
@@ -68,22 +99,21 @@ module Api::V0::Transactions
 
     def update_parent_transaction
       parent_trn_desc = "Transfer from #{from_account.name} to #{to_account.name} account"
-      @parent_transaction = Transaction.update!(description: parent_trn_desc, amount_cents:)
+      parent_transaction.update!(description: parent_trn_desc, amount_cents:)
     end
 
     def update_from_account_transaction
       from_acc_desc = "Transfered to #{to_account.name} account for '#{description}'"
-      UserTransaction.update!(description: from_acc_desc,
-                              amount_cents:,
-                              account: from_account,
-                              parent_transaction:)
+      expense_transaction.update!(description: from_acc_desc,
+                                  amount_cents:,
+                                  account: from_account)
     end
 
     def update_to_account_transaction
       to_acc_desc = "Transfered from #{from_account.name} account for '#{description}'"
-      UserTransaction.update!(description: to_acc_desc,
-                              amount_cents:,
-                              account: to_account)
+      income_transaction.update!(description: to_acc_desc,
+                                 amount_cents:,
+                                 account: to_account)
     end
   end
 end
