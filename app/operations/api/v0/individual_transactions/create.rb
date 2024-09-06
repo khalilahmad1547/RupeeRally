@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Api::V0::Transactions
+module Api::V0::IndividualTransactions
   class Create
     include ApplicationService
 
@@ -11,9 +11,6 @@ module Api::V0::Transactions
         required(:amount_cents).filled(:integer)
         required(:account_id).filled(:integer)
         required(:category_id).filled(:integer)
-        optional(:divide_on).maybe(:array)
-        optional(:division_method).value(:string, included_in?: Transaction.divided_bies.keys)
-        optional(:user_share).maybe(:hash)
       end
     end
 
@@ -48,10 +45,21 @@ module Api::V0::Transactions
     end
 
     def create_transaction
-      transaction = Api::V0::Transactions::CreateIndividualTransaction.call(current_user, params, account, category)
+      transaction = ::IndividualTransactions::CreateService.call(create_params)
       Success(transaction)
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)
+    end
+
+    def create_params
+      {
+        current_user:,
+        account:,
+        category:,
+        description: params[:description],
+        transaction_type: params[:transaction_type],
+        amount_cents: params[:amount_cents]
+      }
     end
 
     def json_serialize(records)

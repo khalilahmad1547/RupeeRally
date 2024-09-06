@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Api::V0::Transactions
-  class DeleteIndividualTransaction < ::BaseService
+module IndividualTransactions
+  class DeleteService < ::BaseService
     def call(parent_transaction)
       @parent_transaction = parent_transaction
       @user_transaction = parent_transaction.user_transactions.first

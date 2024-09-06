@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Api::V0::Jwt
+module Jwt
   class Issuer
     attr_reader :user
 
@@ -13,7 +13,7 @@ module Api::V0::Jwt
     end
 
     def call
-      access_token = Api::V0::Jwt::Encoder.call(user).first
+      access_token = Jwt::Encoder.call(user).first
       refresh_token = user.refresh_tokens.create!
       { access_token:, refresh_token: }
     end

@@ -103,9 +103,9 @@ RSpec.configure do |config|
 end
 
 def valid_jwt(user)
-  "#{Constants::TOKEN_TYPE} #{Api::V0::Jwt::Encoder.call(user).first}"
+  "#{Constants::TOKEN_TYPE} #{Jwt::Encoder.call(user).first}"
 end
 
 def expired_jwt(user)
-  "#{Constants::TOKEN_TYPE} #{Api::V0::Jwt::Encoder.call(user, Time.now.utc.to_i - 1.hour.to_i).first}"
+  "#{Constants::TOKEN_TYPE} #{Jwt::Encoder.call(user, Time.now.utc.to_i - 1.hour.to_i).first}"
 end

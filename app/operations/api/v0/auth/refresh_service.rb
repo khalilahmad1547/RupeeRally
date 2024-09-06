@@ -27,7 +27,7 @@ module Api::V0
 
       def validate_access_token
         access_token = params[:access_token].split('Bearer ')&.last
-        @decoded_token = Api::V0::Jwt::Decoder.call(access_token:, verify: false)
+        @decoded_token = Jwt::Decoder.call(access_token:, verify: false)
         return Failure(:unauthorized) if decoded_token.nil?
 
         Success()
@@ -51,11 +51,11 @@ module Api::V0
       end
 
       def blacklist_previoud_access_token
-        Api::V0::Jwt::Blacklister.blacklist!(jti: decoded_token[:jti], user:)
+        Jwt::Blacklister.blacklist!(jti: decoded_token[:jti], user:)
       end
 
       def new_access_token
-        token = Api::V0::Jwt::Encoder.call(user).first
+        token = Jwt::Encoder.call(user).first
         "#{Constants::TOKEN_TYPE} #{token}"
       end
 

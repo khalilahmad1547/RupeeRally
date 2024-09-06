@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Api::V0::Jwt
+module Jwt
   class Decoder
     attr_reader :access_token, :refresh_token, :verify
 

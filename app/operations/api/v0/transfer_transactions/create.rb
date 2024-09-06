@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Api::V0::Transfers
+module Api::V0::TransferTransactions
   class Create
     include ApplicationService
 
@@ -49,13 +49,20 @@ module Api::V0::Transfers
     end
 
     def create_transfer
-      transaction = Api::V0::Transactions::CreateTransferTransaction.call(current_user,
-                                                                          params,
-                                                                          from_account,
-                                                                          to_account)
+      transaction = ::TransferTransactions::CreateService.call(create_params)
       Success(transaction)
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)
+    end
+
+    def create_params
+      {
+        current_user:,
+        from_account:,
+        to_account:,
+        description: params[:description],
+        amount_cents: params[:amount_cents]
+      }
     end
 
     def json_serialize(records)

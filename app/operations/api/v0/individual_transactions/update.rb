@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Api::V0::Transactions
+module Api::V0::IndividualTransactions
   class Update
     include ApplicationService
 
@@ -12,9 +12,6 @@ module Api::V0::Transactions
         required(:amount_cents).filled(:integer)
         required(:account_id).filled(:integer)
         required(:category_id).filled(:integer)
-        optional(:divide_on).maybe(:array)
-        optional(:division_method).value(:string, included_in?: Transaction.divided_bies.keys)
-        optional(:user_share).maybe(:hash)
       end
     end
 
@@ -59,15 +56,21 @@ module Api::V0::Transactions
     end
 
     def update_transaction
-      extra_params = {
-        account: @account,
-        category: @category,
-        parent_transaction: @parent_transaction
-      }
-      transaction = Api::V0::Transactions::UpdateIndividualTransaction.call(current_user, params, extra_params)
+      transaction = ::IndividualTransactions::UpdateService.call(update_params)
       Success(transaction)
     rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotSaved, ActiveRecord::StatementInvalid => e
       Failure(e.message)
+    end
+
+    def update_params
+      {
+        account:,
+        category:,
+        description: params[:description],
+        transaction_type: params[:transaction_type],
+        amount_cents: params[:amount_cents],
+        parent_transaction:
+      }
     end
 
     def json_serialize(records)

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module Api::V0::Transactions
-  class CreateTransferTransaction < ::BaseService
-    def call(current_user, params, from_account, to_account)
-      set_params(current_user, params, from_account, to_account)
+module TransferTransactions
+  class CreateService < ::BaseService
+    def call(params)
+      process_params(params)
 
       ActiveRecord::Base.transaction do
         create_parent_transaction
@@ -25,10 +25,10 @@ module Api::V0::Transactions
                 :amount_cents,
                 :parent_transaction
 
-    def set_params(current_user, params, from_account, to_account)
-      @current_user = current_user
-      @from_account = from_account
-      @to_account = to_account
+    def process_params(params)
+      @current_user = params[:current_user]
+      @from_account = params[:from_account]
+      @to_account = params[:to_account]
       @description = params[:description]
       @amount_cents = params[:amount_cents]
     end
