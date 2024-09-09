@@ -44,7 +44,8 @@ ActiveRecord::Schema[7.2].define(version: 20_240_806_175_811) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.bigint 'user_id'
-    t.index %w[user_id name], name: 'index_categories_on_user_id_and_name', unique: true
+    t.index %w[user_id name category_type], name: 'index_categories_on_user_id_and_name_and_category_type',
+                                            unique: true
     t.index ['user_id'], name: 'index_categories_on_user_id'
   end
 
