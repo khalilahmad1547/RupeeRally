@@ -7,7 +7,7 @@ module Api::V0::Accounts
     class Contract < ApplicationContract
       params do
         required(:id).filled(:integer)
-        required(:name).filled(:string)
+        optional(:name).maybe(:string)
         optional(:initial_balance_cents).maybe(:integer)
       end
     end
@@ -16,6 +16,7 @@ module Api::V0::Accounts
       @params = params
       @current_user = current_user
 
+      yield require_update?
       @account = yield fetch_account
       @account = yield update_account
       Success(json_serialize)
@@ -24,6 +25,12 @@ module Api::V0::Accounts
     private
 
     attr_reader :params, :current_user, :account
+
+    def require_update?
+      return Success() if params.any? { |key, value| key != :id && value.present? }
+
+      Failure('nothing to update')
+    end
 
     def fetch_account
       @account = current_user.accounts.find_by(id: params[:id])
