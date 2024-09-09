@@ -9,6 +9,6 @@ class CreateCategories < ActiveRecord::Migration[7.1]
     end
 
     add_reference :categories, :user, foreign_key: true
-    add_index :categories, %i[user_id name], unique: true
+    add_index :categories, %i[user_id name category_type], unique: true
   end
 end
