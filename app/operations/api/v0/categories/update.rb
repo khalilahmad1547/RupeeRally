@@ -16,6 +16,7 @@ module Api::V0::Categories
       @params = params
       @current_user = current_user
 
+      yield require_update?
       @category = yield fetch_category
       @category = yield update_category
       Success(json_serialize)
@@ -24,6 +25,12 @@ module Api::V0::Categories
     private
 
     attr_reader :params, :current_user, :category
+
+    def require_update?
+      return Success() if params.any? { |key, value| key != :id && value.present? }
+
+      Failure('nothing to update')
+    end
 
     def fetch_category
       @category = current_user.categories.find_by(id: params[:id])
@@ -37,13 +44,9 @@ module Api::V0::Categories
       name = params[:name]
       category_type = params[:category_type]
 
-      return Success(category.reload) if require_update? && category.update(name:, category_type:)
+      return Success(category.reload) if category.update(name:, category_type:)
 
       Failure(category.errors.full_messages)
-    end
-
-    def require_update?
-      params[:name] || params[:category_type]
     end
 
     def json_serialize
