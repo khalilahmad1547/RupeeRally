@@ -128,8 +128,8 @@ RSpec.describe '/api/v0/categories', type: :request do
       include_context 'forbidden'
       include_context 'unauthorized'
 
-      context 'when category with name already exist' do
-        let(:category) { create(:category, user:) }
+      context 'when category with name and type already exist' do
+        let(:category) { create(:category, user:, category_type:) }
         let(:params) do
           {
             name: category.name,
