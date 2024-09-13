@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Category < ApplicationRecord
-  enum category_type: { income: 0, expense: 1 }
+  enum :category_type, { income: 0, expense: 1 }
 
   validates :name, presence: true
   validates :name, uniqueness: { scope: %i[user category_type] }
