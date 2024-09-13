@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 
 ruby '3.2.4'
 
-gem 'rails', '~> 7.2.0'
+gem 'rails', '~> 7.2.1'
 
 gem 'sprockets-rails'
 
@@ -34,7 +34,7 @@ gem 'stimulus-rails'
 # for file storage
 gem 'shrine', '~> 3.6'
 
-gem 'sidekiq', '~> 7.2'
+gem 'sidekiq', '~> 7.3'
 
 gem 'redis', '>= 4.0.1'
 # gem "kredis"
@@ -46,7 +46,7 @@ gem 'pagy', '~> 9.0', '>= 9.0.5'
 gem 'devise', '~> 4.9'
 gem 'jwt', '~> 2.8', '>= 2.8.2'
 gem 'omniauth', '~> 2.1', '>= 2.1.2'
-gem 'omniauth-google-oauth2', '~> 1.1', '>= 1.1.2'
+gem 'omniauth-google-oauth2', '~> 1.1'
 gem 'omniauth-rails_csrf_protection', '~> 1.0', '>= 1.0.2'
 
 gem 'tzinfo-data'
@@ -60,7 +60,7 @@ group :development, :test do
   gem 'factory_bot_rails', '~> 6.4'
   gem 'faker', '~> 3.4'
   gem 'json_matchers', '~> 0.11.1'
-  gem 'rspec-rails', '~> 6.1'
+  gem 'rspec-rails', '~> 7.0'
   gem 'simplecov', require: false
 end
 
