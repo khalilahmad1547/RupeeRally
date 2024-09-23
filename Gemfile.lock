@@ -185,7 +185,7 @@ GEM
     json_matchers (0.11.1)
       json_schema
     json_schema (0.21.0)
-    jwt (2.9.0)
+    jwt (2.9.1)
       base64
     kramdown (2.4.0)
       rexml
