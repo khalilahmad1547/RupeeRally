@@ -5,7 +5,7 @@ class Account < ApplicationRecord
   validates :name, uniqueness: { scope: :user }
 
   belongs_to :user
-  has_many :user_transactions, dependent: :nullify
+  has_many :transactions, dependent: :nullify
 
   def record_expense(amount_cents)
     self.balance_cents -= amount_cents

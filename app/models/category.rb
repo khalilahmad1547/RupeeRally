@@ -7,5 +7,5 @@ class Category < ApplicationRecord
   validates :name, uniqueness: { scope: %i[user category_type] }
 
   belongs_to :user
-  has_many :user_transactions, dependent: :nullify
+  has_many :transactions, dependent: :nullify
 end
