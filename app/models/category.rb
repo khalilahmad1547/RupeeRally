@@ -8,4 +8,8 @@ class Category < ApplicationRecord
 
   belongs_to :user
   has_many :transactions, dependent: :nullify
+
+  def update_balance(balance)
+    self.amount_cents += balance
+  end
 end
