@@ -7,10 +7,12 @@ module Api::V0::IndividualTransactions
     class Contract < ApplicationContract
       params do
         required(:description).filled(:string)
-        required(:transaction_type).filled(:string, included_in?: UserTransaction.transaction_types.keys)
+        required(:direction).filled(:string, included_in?: Transaction.directions.keys)
         required(:amount_cents).filled(:integer)
         required(:account_id).filled(:integer)
         required(:category_id).filled(:integer)
+        required(:date).filled(:string)
+        required(:time).filled(:string)
       end
     end
 
@@ -57,7 +59,7 @@ module Api::V0::IndividualTransactions
         account:,
         category:,
         description: params[:description],
-        transaction_type: params[:transaction_type],
+        direction: params[:direction],
         amount_cents: params[:amount_cents]
       }
     end

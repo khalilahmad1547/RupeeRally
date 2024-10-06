@@ -6,9 +6,10 @@ module IndividualTransactions
       process_params(params)
 
       ActiveRecord::Base.transaction do
+        validate_category
         create_parent_transaction
-        create_user_transaction
         update_account
+        update_category
       end
 
       parent_transaction
@@ -20,45 +21,46 @@ module IndividualTransactions
                 :params,
                 :description,
                 :amount_cents,
-                :transaction_type,
+                :direction,
                 :account,
                 :category,
-                :parent_transaction,
-                :user_transaction
+                :parent_transaction
 
     def process_params(params)
       @params = params
       @current_user = params[:current_user]
       @description = params[:description]
       @amount_cents = params[:amount_cents]
-      @transaction_type = params[:transaction_type]
+      @direction = params[:direction]
       @account = params[:account]
       @category = params[:category]
+    end
+
+    def validate_category
+      raise CategoryTypeMismatchError unless category.category_type == direction
     end
 
     def create_parent_transaction
       @parent_transaction = Transaction.create!(user: current_user,
                                                 description:,
+                                                direction:,
                                                 amount_cents:,
                                                 divided_by: :by_none,
-                                                transaction_type: :individual)
-    end
-
-    def create_user_transaction
-      @user_transaction = UserTransaction.create!(user: current_user,
-                                                  description:,
-                                                  transaction_type:,
-                                                  user_share: 100,
-                                                  amount_cents:,
-                                                  account:,
-                                                  category:,
-                                                  parent_transaction:,
-                                                  paid_by: current_user)
+                                                user_share: 100,
+                                                transaction_type: :individual,
+                                                category:,
+                                                paid_by: current_user,
+                                                account:)
     end
 
     def update_account
-      user_transaction.expense? ? account.record_expense(amount_cents) : account.record_income(amount_cents)
+      parent_transaction.expense? ? account.record_expense(amount_cents) : account.record_income(amount_cents)
       account.save!
+    end
+
+    def update_category
+      category.update_balance(amount_cents)
+      category.save!
     end
   end
 end

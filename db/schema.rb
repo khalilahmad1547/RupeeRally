@@ -74,9 +74,21 @@ ActiveRecord::Schema[7.2].define(version: 20_240_913_113_208) do
     t.string 'selected_date', default: '', null: false
     t.string 'selected_time', default: '', null: false
     t.integer 'transaction_type', default: 0, null: false
+    t.integer 'direction', default: 0, null: false
+    t.integer 'user_share', default: 0, null: false
+    t.integer 'status', default: 0, null: false
+    t.integer 'parent_transaction_id'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.bigint 'user_id'
+    t.bigint 'account_id'
+    t.bigint 'category_id'
+    t.bigint 'paid_by_id'
+    t.index ['account_id'], name: 'index_transactions_on_account_id', where: '(account_id IS NOT NULL)'
+    t.index ['category_id'], name: 'index_transactions_on_category_id', where: '(category_id IS NOT NULL)'
+    t.index ['paid_by_id'], name: 'index_transactions_on_paid_by_id'
+    t.index ['parent_transaction_id'], name: 'index_transactions_on_parent_transaction_id',
+                                       where: '(parent_transaction_id IS NOT NULL)'
     t.index ['user_id'], name: 'index_transactions_on_user_id'
   end
 
@@ -87,23 +99,6 @@ ActiveRecord::Schema[7.2].define(version: 20_240_913_113_208) do
     t.datetime 'updated_at', null: false
     t.index ['group_id'], name: 'index_user_groups_on_group_id'
     t.index ['user_id'], name: 'index_user_groups_on_user_id'
-  end
-
-  create_table 'user_transactions', force: :cascade do |t|
-    t.text 'description', default: '', null: false
-    t.integer 'transaction_type', default: 0, null: false
-    t.integer 'user_share', default: 0, null: false
-    t.integer 'amount_cents', default: 0, null: false
-    t.integer 'status', default: 0, null: false
-    t.datetime 'created_at', null: false
-    t.datetime 'updated_at', null: false
-    t.bigint 'user_id'
-    t.bigint 'account_id'
-    t.bigint 'category_id'
-    t.bigint 'transaction_id'
-    t.bigint 'paid_by_id'
-    t.index ['account_id'], name: 'index_user_transactions_on_account_id', where: '(account_id IS NOT NULL)'
-    t.index ['category_id'], name: 'index_user_transactions_on_category_id', where: '(category_id IS NOT NULL)'
   end
 
   create_table 'users', force: :cascade do |t|
@@ -127,12 +122,10 @@ ActiveRecord::Schema[7.2].define(version: 20_240_913_113_208) do
   add_foreign_key 'categories', 'users'
   add_foreign_key 'groups', 'users', column: 'created_by_id'
   add_foreign_key 'refresh_tokens', 'users'
+  add_foreign_key 'transactions', 'accounts'
+  add_foreign_key 'transactions', 'categories'
   add_foreign_key 'transactions', 'users'
+  add_foreign_key 'transactions', 'users', column: 'paid_by_id'
   add_foreign_key 'user_groups', 'groups'
   add_foreign_key 'user_groups', 'users'
-  add_foreign_key 'user_transactions', 'accounts'
-  add_foreign_key 'user_transactions', 'categories'
-  add_foreign_key 'user_transactions', 'transactions'
-  add_foreign_key 'user_transactions', 'users'
-  add_foreign_key 'user_transactions', 'users', column: 'paid_by_id'
 end
