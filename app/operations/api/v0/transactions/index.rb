@@ -16,7 +16,7 @@ module Api::V0::Transactions
     def execute(params, current_user:)
       @params = params
       @current_user = current_user
-      @transactions = current_user.transactions.includes(:user_transactions)
+      @transactions = current_user.transactions.includes(:child_transactions)
 
       records = process_transactions
       Success(json_serialize(records))
